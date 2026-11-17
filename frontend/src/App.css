@@ -7,22 +7,22 @@
 * {
   /* margin: 0;
   padding: 0; */
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background: #101323;
   color: #f8fafc;
-  min-height: 100vh;
-  padding: 40px 20px;
+  /* min-height: 100vh;
+  padding: 40px 20px; */
   
 }
 
-.app {
+/* .app {
   max-width: full;
   margin: auto;
-}
+} */
 
 .app h1 {
   font-size: 32px;

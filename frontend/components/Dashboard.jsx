@@ -1,15 +1,26 @@
-import { Wallet, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  Bell,
+  UserRound,
+} from "lucide-react";
 import { motion } from "motion/react";
 import AnimatedAmount from "./AnimatedAmount";
+import { useMemo } from "react";
 
-export default function Dashboard({ transactions }) {
-  const totalIncome = transactions.reduce((total, item) => {
-    return item.type === "income" ? total + Number(item.amount) : total;
-  }, 0);
+export default function Dashboard({ transactions, setShowTransactionForm }) {
+  const { totalIncome, totalExpense } = useMemo(() => {
+    return {
+      totalExpense: transactions.reduce((total, item) => {
+        return item.type === "expense" ? total + Number(item.amount) : total;
+      }, 0),
 
-  const totalExpense = transactions.reduce((total, item) => {
-    return item.type === "expense" ? total + Number(item.amount) : total;
-  }, 0);
+      totalIncome: transactions.reduce((total, item) => {
+        return item.type === "income" ? total + Number(item.amount) : total;
+      }, 0),
+    };
+  }, [transactions]);
 
   const balance = totalIncome - totalExpense;
 
@@ -26,27 +37,33 @@ export default function Dashboard({ transactions }) {
       amount: balance,
       icon: Wallet,
       color: "text-purple-400",
+      badge: "+60.4% vs last month",
+      badgeColor: "text-emerald-400",
     },
     {
       title: "Total Income",
       amount: totalIncome,
       icon: TrendingUp,
       color: "text-green-400",
+      badge: "+16.8% vs last month",
+      badgeColor: "text-emerald-400",
     },
     {
       title: "Total Expenses",
       amount: totalExpense,
       icon: TrendingDown,
       color: "text-red-400",
+      badge: "-33.6% vs last month",
+      badgeColor: "text-red-400",
     },
   ];
 
-  // Animation for cards
+  // Animation variants
   const containerVariants = {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
       },
     },
   };
@@ -54,32 +71,63 @@ export default function Dashboard({ transactions }) {
   const cardVariants = {
     hidden: {
       opacity: 0,
-      y: 30,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
+        duration: 0.4,
       },
     },
   };
 
   return (
-    <div className="w-full flex flex-col gap-6 text-white">
-      {/* Welcome */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-left"
-      >
-        <h1 className="text-2xl font-bold">Welcome back!</h1>
+    <div className="w-full flex flex-col gap-6 text-white p-6 md:p-2">
+      <div className="flex justify-between">
+        {/* Welcome & Greeting Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-left mt-2"
+        >
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <span>🌤️</span> {getGreeting()},{" "}
+            <span className="text-purple-400">there!</span>
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Here's your financial summary for today
+          </p>
+        </motion.div>
 
-        <p className="text-gray-400 mt-1">Here's your financial overview.</p>
-      </motion.div>
+        <div className="flex items-center gap-6">
+          {/* Notification */}
+          <motion.button
+            whileHover={{ scale: 1.09 }}
+            className="relative text-gray-300 hover:text-white"
+          >
+            <Bell size={22} />
 
-      {/* Summary Cards */}
+            <span className="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full"></span>
+          </motion.button>
+
+          {/* User Profile */}
+          <div className="flex items-center gap-3">
+            <div className="bg-purple-600 rounded-full p-2">
+              <UserRound size={22} className="text-white" />
+            </div>
+
+            <div>
+              <h3 className="text-white font-semibold text-sm">Oshin</h3>
+
+              <p className="text-gray-400 text-xs">User</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Summary Cards Grid */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -94,21 +142,26 @@ export default function Dashboard({ transactions }) {
               key={card.title}
               variants={cardVariants}
               whileHover={{
-                y: -6,
-                scale: 1.02,
+                y: -4,
               }}
               transition={{ duration: 0.2 }}
-              className="bg-slate-900 border border-gray-700 rounded-xl p-5 cursor-pointer"
+              className="bg-[#121829]/90 border border-gray-800 rounded-xl p-5 cursor-pointer shadow-xl backdrop-blur-md"
             >
               <div className="flex justify-between items-center">
-                <p className="text-gray-400">{card.title}</p>
-
-                <Icon size={22} className={card.color} />
+                <p className="text-gray-400 text-sm">{card.title}</p>
+                <span className="p-2 bg-gray-800/60 rounded-lg">
+                  <Icon size={18} className={card.color} />
+                </span>
               </div>
 
-              <h2 className="text-2xl font-bold mt-4">
+              <h2 className="text-2xl font-bold mt-3 text-white">
                 <AnimatedAmount amount={card.amount} />
               </h2>
+
+              {/* <div className="mt-3 flex items-center gap-1.5 text-xs">
+                <span className={`font-medium ${card.badgeColor}`}>{card.badge.split(" ")[0]}</span>
+                <span className="text-gray-400">{card.badge.split(" ").slice(1).join(" ")}</span>
+              </div> */}
             </motion.div>
           );
         })}

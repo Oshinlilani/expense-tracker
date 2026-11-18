@@ -43,7 +43,7 @@ export default function Analytics({ transactions }) {
     `₹${Number(value).toLocaleString("en-IN")}`;
 
   return (
-    <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <section className="grid grid-cols-1 xl:grid-cols-2 gap-6 ">
 
       {/* Income vs Expenses */}
       <div className="rounded-2xl border border-slate-800 bg-[#050b1c] p-5">
@@ -104,8 +104,8 @@ export default function Analytics({ transactions }) {
             No transactions available
           </p>
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={barData} margin={{ top: 10, right: 10, left: 10 }}>
+          <ResponsiveContainer width="100%" height={315}>
+            <BarChart data={barData} margin={{ top: 10, right: 50, left: 10 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="#1e293b"

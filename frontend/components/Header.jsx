@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Search, Bell, UserRound } from "lucide-react";
+import { Bell, UserRound } from "lucide-react";
 import { useRef, useState } from "react";
 
 export default function Header({ onSearch }) {
@@ -16,9 +16,7 @@ export default function Header({ onSearch }) {
     }, 500);
   };
   return (
-    <header className="w-full flex items-center justify-between bg-[#111827] border border-slate-800 rounded-2xl p-4">
-      {/* Search Bar */}
-     
+    <header className="w-full flex items-end justify-end bg-[#111827] border border-slate-800 rounded-2xl p-4">
 
       {/* Right Section */}
       <div className="flex items-center gap-6">

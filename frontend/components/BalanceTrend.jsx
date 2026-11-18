@@ -1,4 +1,4 @@
-
+import { useMemo } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -11,63 +11,64 @@ import {
 } from "recharts";
 
 export default function BalanceTrend({ transactions }) {
-  const monthlyData = {};
+  const chartData = useMemo(() => {
+    const monthlyData = {};
 
-  // Group transactions by month
-  transactions.forEach((item) => {
-    if (!item.date) return;
+    // Group transactions by month
+    transactions.forEach((item) => {
+      if (!item.date) return;
 
-    const month = item.date.slice(0, 7);
+      const month = item.date.slice(0, 7);
 
-    if (!/^\d{4}-\d{2}$/.test(month)) return;
+      if (!/^\d{4}-\d{2}$/.test(month)) return;
 
-    if (!monthlyData[month]) {
-      monthlyData[month] = {
-        month,
-        income: 0,
-        expenses: 0,
+      if (!monthlyData[month]) {
+        monthlyData[month] = {
+          month,
+          income: 0,
+          expenses: 0,
+        };
+      }
+
+      if (item.type === "income") {
+        monthlyData[month].income += Number(item.amount);
+      } else if (item.type === "expense") {
+        monthlyData[month].expenses += Number(item.amount);
+      }
+    });
+
+    // Sort months
+    const sortedMonths = Object.values(monthlyData).sort((a, b) =>
+      a.month.localeCompare(b.month),
+    );
+
+    // Calculate cumulative balance
+    let runningBalance = 0;
+
+    const result = sortedMonths.map((item) => {
+      runningBalance += item.income - item.expenses;
+
+      const date = new Date(`${item.month}-01T00:00:00`);
+
+      return {
+        ...item,
+        balance: runningBalance,
+        monthLabel: date.toLocaleDateString("en-IN", {
+          month: "short",
+          year: "numeric",
+        }),
       };
-    }
+    });
 
-    if (item.type === "income") {
-      monthlyData[month].income += Number(item.amount);
-    } else if (item.type === "expense") {
-      monthlyData[month].expenses += Number(item.amount);
-    }
-  });
+    return result;
+  }, [transactions]);
 
-  // Sort months
-  const sortedMonths = Object.values(monthlyData).sort((a, b) =>
-    a.month.localeCompare(b.month)
-  );
-
-  // Calculate cumulative balance
-  let runningBalance = 0;
-
-  const chartData = sortedMonths.map((item) => {
-    runningBalance += item.income - item.expenses;
-
-    const date = new Date(`${item.month}-01T00:00:00`);
-
-    return {
-      ...item,
-      balance: runningBalance,
-      monthLabel: date.toLocaleDateString("en-IN", {
-        month: "short",
-        year: "numeric",
-      }),
-    };
-  });
-
-  const formatAmount = (value) =>
-    `₹${Number(value).toLocaleString("en-IN")}`;
+  const formatAmount = (value) => `₹${Number(value).toLocaleString("en-IN")}`;
 
   return (
     <div className="w-full rounded-2xl border border-slate-800 bg-[#050b1c] p-4 sm:p-5">
       <div className="mb-4">
-        <h2 className="text-base font-semibold text-white">
-          Balance Trend
-        </h2>
+        <h2 className="text-base font-semibold text-white">Balance Trend</h2>
 
         <p className="mt-1 text-xs text-slate-400">
           Cumulative balance over time
@@ -98,11 +99,7 @@ export default function BalanceTrend({ transactions }) {
               </linearGradient>
             </defs>
 
-            <CartesianGrid
-              stroke="#263047"
-              strokeDasharray="3 3"
-              vertical
-            />
+            <CartesianGrid stroke="#263047" strokeDasharray="3 3" vertical />
 
             <XAxis
               dataKey="monthLabel"

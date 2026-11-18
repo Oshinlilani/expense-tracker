@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 import TransactionForm from "../components/TransactionForm.jsx";
@@ -93,14 +93,11 @@ function App() {
   }, []);
 
   // Search transactions (for Overview Recent Transactions)
-  const filteredTransactions = React.memo(() => {
-    return (
-      transaction.filter((item) =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-      [transaction, searchTerm]
+  const filteredTransactions = useMemo(() => {
+    return transaction.filter((item) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  });
+  }, [transaction, searchTerm]);
 
   // Save transactions to localStorage
   useEffect(() => {

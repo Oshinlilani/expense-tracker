@@ -9,7 +9,12 @@ import { motion } from "motion/react";
 import AnimatedAmount from "./AnimatedAmount";
 import { useMemo } from "react";
 
-export default function Dashboard({ transactions, setShowTransactionForm }) {
+export default function Dashboard({
+  transactions,
+  setShowTransactionForm,
+  handleLogout,
+  currentUser,
+}) {
   const { totalIncome, totalExpense } = useMemo(() => {
     return {
       totalExpense: transactions.reduce((total, item) => {
@@ -94,34 +99,41 @@ export default function Dashboard({ transactions, setShowTransactionForm }) {
         >
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <span>🌤️</span> {getGreeting()},{" "}
-            <span className="text-purple-400">there!</span>
+            <span className="text-purple-400">{currentUser.name}!</span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">
-            Here's your financial summary for today
+            Here's your financial summary.
           </p>
         </motion.div>
 
         <div className="flex items-center gap-6">
           {/* Notification */}
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.09 }}
             className="relative text-gray-300 hover:text-white"
           >
             <Bell size={22} />
 
             <span className="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full"></span>
-          </motion.button>
+          </motion.button> */}
 
           {/* User Profile */}
-          <div className="flex items-center gap-3">
-            <div className="bg-purple-600 rounded-full p-2">
-              <UserRound size={22} className="text-white" />
-            </div>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="text-sm text-slate-300">
+                Hi, {currentUser.name}
+              </span>
 
-            <div>
-              <h3 className="text-white font-semibold text-sm">Oshin</h3>
+              <button
+                onClick={handleLogout}
+                className="rounded-lg border border-purple-500/30 px-4 py-2 text-sm text-purple-300 hover:bg-purple-500/10"
+              >
+                Logout
+              </button>
 
-              <p className="text-gray-400 text-xs">User</p>
+              {/* <div className="bg-purple-600 rounded-full p-2">
+                <UserRound size={22} className="text-white" />
+              </div> */}
             </div>
           </div>
         </div>

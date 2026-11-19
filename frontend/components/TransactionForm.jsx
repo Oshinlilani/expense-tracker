@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "motion/react";
 import { X } from "lucide-react";
@@ -18,6 +17,7 @@ export default function TransactionForm({ onAdd, onCancel }) {
     amount: "",
     type: "income",
     date: getTodayDate(),
+    category: "",
   });
 
   const handleChange = (e) => {
@@ -58,9 +58,7 @@ export default function TransactionForm({ onAdd, onCancel }) {
         className="w-full max-w-md rounded-2xl border border-slate-700 bg-[#111827] p-6 shadow-2xl"
       >
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">
-            Add Transaction
-          </h2>
+          <h2 className="text-xl font-semibold text-white">Add Transaction</h2>
 
           <button
             type="button"
@@ -73,9 +71,7 @@ export default function TransactionForm({ onAdd, onCancel }) {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="mb-2 block text-sm text-slate-300">
-              Title
-            </label>
+            <label className="mb-2 block text-sm text-slate-300">Title</label>
             <input
               name="title"
               value={formData.title}
@@ -87,9 +83,7 @@ export default function TransactionForm({ onAdd, onCancel }) {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-300">
-              Amount
-            </label>
+            <label className="mb-2 block text-sm text-slate-300">Amount</label>
             <input
               type="number"
               name="amount"
@@ -104,9 +98,7 @@ export default function TransactionForm({ onAdd, onCancel }) {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-300">
-              Type
-            </label>
+            <label className="mb-2 block text-sm text-slate-300">Type</label>
             <select
               name="type"
               value={formData.type}
@@ -115,6 +107,33 @@ export default function TransactionForm({ onAdd, onCancel }) {
             >
               <option value="income">Income</option>
               <option value="expense">Expense</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm text-slate-300">
+              Category
+            </label>
+
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 p-3 text-white outline-none focus:border-purple-500"
+            >
+              <option value="">Select Category</option>
+              <option value="Health">Health</option>
+              <option value="Education">Education</option>
+              <option value="Food & Dining">Food & Dining</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Investment">Investment</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Transport">Transport</option>
+              <option value="Freelance">Freelance</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Housing">Housing</option>
+              <option value="Salary">Salary</option>
             </select>
           </div>
 

@@ -76,7 +76,7 @@ export default function BalanceTrend({ transactions }) {
       </div>
 
       {chartData.length === 0 ? (
-        <div className="flex h-[300px] items-center justify-center">
+        <div className="flex h-75 items-center justify-center">
           <p className="text-sm text-slate-400">
             Add dated transactions to view your balance trend.
           </p>

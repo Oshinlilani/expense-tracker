@@ -12,6 +12,7 @@ export default function EditTransactionForm({
     amount: "",
     type: "income",
     date: "",
+    category: "",
   });
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function EditTransactionForm({
         amount: transaction.amount,
         type: transaction.type,
         date: transaction.date || "",
+        category: transaction.category || "",
       });
     }
   }, [transaction]);
@@ -104,6 +106,31 @@ export default function EditTransactionForm({
             >
               <option value="income">Income</option>
               <option value="expense">Expense</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-gray-300">Category</label>
+
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className="w-full rounded-lg border border-gray-700 bg-slate-800 p-3 text-white outline-none focus:border-purple-500"
+            >
+              <option value="">Select Category</option>
+              <option value="Health">Health</option>
+              <option value="Education">Education</option>
+              <option value="Food & Dining">Food & Dining</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Investment">Investment</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Transport">Transport</option>
+              <option value="Freelance">Freelance</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Housing">Housing</option>
+              <option value="Salary">Salary</option>
             </select>
           </div>
 

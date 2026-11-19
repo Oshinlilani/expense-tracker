@@ -15,9 +15,14 @@ import { Search } from "lucide-react";
 import Analytics from "../components/Analytics.jsx";
 import BalanceTrend from "../components/BalanceTrend.jsx";
 import UpcomingBills from "../components/UpcomingBills.jsx";
+import Login from "../components/Login.jsx";
 
 function App() {
   const [activeTab, setActiveTab] = useState("overview");
+
+  const [currentUser, setCurrentUser] = useState(() => {
+    return JSON.parse(localStorage.getItem("expenseTrackerUser") || "null");
+  });
 
   const initialTransactions = [
     {
@@ -86,6 +91,16 @@ function App() {
   const [editTransaction, setEditTransaction] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const handleAuthSuccess = (user) => {
+    localStorage.setItem("expenseTrackerUser", JSON.stringify(user));
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("expenseTrackerUser");
+    setCurrentUser(null);
+  };
+
   // Add transaction
   const handleTransaction = useCallback((newTransaction) => {
     setTransaction((prev) => [...prev, newTransaction]);
@@ -125,6 +140,20 @@ function App() {
     setEditTransaction(null);
   }, []);
 
+  const handleImportTransactions = useCallback((newTransactions) => {
+    setTransaction((prev) => [
+      ...prev,
+      ...newTransactions.map((item, index) => ({
+        ...item,
+        id: Date.now() + index,
+      })),
+    ]);
+  }, []);
+
+  if (!currentUser) {
+    return <Login onAuthSuccess={handleAuthSuccess} />;
+  }
+
   return (
     <div className="min-h-screen w-full flex gap-6 bg-[#0f1020] p-6">
       {/* Sidebar */}
@@ -143,6 +172,8 @@ function App() {
             <Dashboard
               transactions={transaction}
               setShowTransactionForm={setShowTransactionForm}
+              handleLogout={handleLogout}
+              currentUser={currentUser}
             />
 
             <div className="w-full  grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -220,6 +251,7 @@ function App() {
             onAdd={() => setShowTransactionForm(true)}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onImport={handleImportTransactions}
           />
         )}
 

@@ -1,3 +1,5 @@
+
+import { useState } from "react";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -5,9 +7,12 @@ import {
   ChartPie,
   Target,
   ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 export default function Sidebar({ activeTab, setActiveTab }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const menuItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "transactions", label: "Transactions", icon: ArrowLeftRight },
@@ -17,13 +22,26 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <div className="flex flex-col w-full h-screen p-2 bg-[#0b0e20]/80 bg-linear-to-b from-[#7c6ff6]/20 via-[#3b3486]/15 to-[#0b0e20]/90 backdrop-blur-xl border-r border-[#7c6ff6]/25">
+    <div
+      className={`flex flex-col h-screen shrink-0 p-2 bg-[#0b0e20]/80 bg-linear-to-b from-[#7c6ff6]/20 via-[#3b3486]/15 to-[#0b0e20]/90 backdrop-blur-xl border-r border-[#7c6ff6]/25 transition-all duration-300 ${
+        isCollapsed ? "w-20" : "w-64"
+      }`}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-3 border-b border-indigo-900/70 p-3">
-        <span className="bg-[#7c6ff6] rounded-lg p-2 shadow-md shadow-[#7c6ff6]/30">
+      <div
+        className={`flex items-center gap-3 border-b border-indigo-900/70 p-3 ${
+          isCollapsed ? "justify-center" : ""
+        }`}
+      >
+        <span className="bg-[#7c6ff6] rounded-lg p-2 shadow-md shadow-[#7c6ff6]/30 shrink-0">
           <LayoutDashboard size={20} className="text-white" />
         </span>
-        <h2 className="font-bold text-white text-lg">Expense Tracker</h2>
+
+        {!isCollapsed && (
+          <h2 className="font-bold text-white text-lg whitespace-nowrap">
+            Expense Tracker
+          </h2>
+        )}
       </div>
 
       {/* Navigation */}
@@ -33,26 +51,44 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           const isActive = activeTab === item.id;
 
           return (
-            <div
+            <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
+              title={isCollapsed ? item.label : ""}
               className={`flex items-center gap-3 rounded-lg p-3 cursor-pointer transition ${
+                isCollapsed ? "justify-center" : ""
+              } ${
                 isActive
                   ? "bg-[#7c6ff6] shadow-lg shadow-[#7c6ff6]/25 text-white font-medium"
                   : "text-slate-400 hover:bg-[#7c6ff6]/10 hover:text-white"
               }`}
             >
-              <Icon size={20} />
-              <span>{item.label}</span>
-            </div>
+              <Icon size={20} className="shrink-0" />
+
+              {!isCollapsed && (
+                <span className="whitespace-nowrap">{item.label}</span>
+              )}
+            </button>
           );
         })}
       </nav>
 
+      {/* Collapse Button */}
       <div className="mt-auto border-t border-indigo-950/60 p-3">
-        <button className="flex items-center gap-3 text-slate-400 hover:text-white transition">
-          <ChevronLeft size={18} />
-          <span className="text-sm">Collapse</span>
+        <button
+          onClick={() => setIsCollapsed((prev) => !prev)}
+          className={`flex items-center gap-3 w-full text-slate-400 hover:text-white transition ${
+            isCollapsed ? "justify-center" : ""
+          }`}
+        >
+          {isCollapsed ? (
+            <ChevronRight size={18} />
+          ) : (
+            <>
+              <ChevronLeft size={18} />
+              <span className="text-sm">Collapse</span>
+            </>
+          )}
         </button>
       </div>
     </div>

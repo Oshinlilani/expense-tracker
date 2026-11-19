@@ -240,7 +240,7 @@ function App() {
             </section>
 
             {/* Summary */}
-            <Summary expenses={transaction} />
+            {/* <Summary expenses={transaction} /> */}
           </>
         )}
 

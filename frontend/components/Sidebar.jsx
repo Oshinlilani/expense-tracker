@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -10,9 +9,12 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-export default function Sidebar({ activeTab, setActiveTab }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+export default function Sidebar({
+  activeTab,
+  setActiveTab,
+  isCollapsed,
+  setIsCollapsed
+}) {
   const menuItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "transactions", label: "Transactions", icon: ArrowLeftRight },
@@ -22,11 +24,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <div
-      className={`flex flex-col h-screen shrink-0 p-2 bg-[#0b0e20]/80 bg-linear-to-b from-[#7c6ff6]/20 via-[#3b3486]/15 to-[#0b0e20]/90 backdrop-blur-xl border-r border-[#7c6ff6]/25 transition-all duration-300 ${
-        isCollapsed ? "w-20" : "w-64"
-      }`}
-    >
+    <div className="flex flex-col w-full h-screen p-2 bg-[#0b0e20]/80 bg-linear-to-b from-[#7c6ff6]/20 via-[#3b3486]/15 to-[#0b0e20]/90 backdrop-blur-xl border-r border-[#7c6ff6]/25">
       {/* Logo */}
       <div
         className={`flex items-center gap-3 border-b border-indigo-900/70 p-3 ${
@@ -45,7 +43,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-2 p-3 mt-6">
+      <nav className="flex flex-col gap-2 p-2 mt-6">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

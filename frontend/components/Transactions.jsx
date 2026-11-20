@@ -1,3 +1,42 @@
+const createTransactionKey = (transaction) => {
+  const normalizeDate = (date) => {
+    if (!date) return "";
+
+    const value = String(date).trim();
+
+    // Keep ISO dates unchanged
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value;
+    }
+
+    const parsedDate = new Date(value);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return value.toLowerCase();
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  return [
+    String(transaction.title || "")
+      .trim()
+      .toLowerCase(),
+    Number(transaction.amount),
+    String(transaction.type || "")
+      .trim()
+      .toLowerCase(),
+    normalizeDate(transaction.date),
+    String(transaction.category || "")
+      .trim()
+      .toLowerCase(),
+  ].join("|");
+};
+
 import { useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import {
@@ -66,7 +105,15 @@ export default function Transactions({
         return;
       }
 
+      // Store existing transaction keys
+      const existingKeys = new Set(transactions.map(createTransactionKey));
+
+      // Store keys imported from the current Excel file
+      const importedKeys = new Set();
+
       const importedTransactions = [];
+
+      let duplicates = 0;
       let skipped = 0;
 
       rows.forEach((row) => {
@@ -78,31 +125,49 @@ export default function Transactions({
         const date = String(row.date || "").trim();
         const category = String(row.category || "").trim();
 
+        // Validate transaction
         if (
           !title ||
           !Number.isFinite(amount) ||
           amount <= 0 ||
-          !["income", "expense"].includes(type)
+          !["income", "expense"].includes(type) ||
+          !date ||
+          !category
         ) {
           skipped++;
           return;
         }
 
-        importedTransactions.push({
+        const newTransaction = {
           title,
           amount,
           type,
           date,
           category,
-        });
+        };
+
+        const transactionKey = createTransactionKey(newTransaction);
+
+        // Check duplicates
+        if (
+          existingKeys.has(transactionKey) ||
+          importedKeys.has(transactionKey)
+        ) {
+          duplicates++;
+          return;
+        }
+
+        importedKeys.add(transactionKey);
+        importedTransactions.push(newTransaction);
       });
 
+      // Import only unique transactions
       if (importedTransactions.length > 0) {
         onImport(importedTransactions);
       }
 
       setImportMessage(
-        `${importedTransactions.length} imported, ${skipped} skipped.`,
+        `${importedTransactions.length} imported, ${duplicates} duplicates skipped, ${skipped} invalid rows skipped.`,
       );
     } catch (error) {
       console.error("Excel import error:", error);

@@ -157,7 +157,7 @@ export default function Dashboard({
                 y: -4,
               }}
               transition={{ duration: 0.2 }}
-              className="bg-[#121829]/90 border border-gray-800 rounded-xl p-5 cursor-pointer shadow-xl backdrop-blur-md"
+              className="bg-[#121829]/90 border border-gray-800 rounded-xl p-5 cursor-default shadow-xl backdrop-blur-md"
             >
               <div className="flex justify-between items-center">
                 <p className="text-gray-400 text-sm">{card.title}</p>

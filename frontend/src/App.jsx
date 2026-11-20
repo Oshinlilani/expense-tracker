@@ -24,6 +24,8 @@ function App() {
     return JSON.parse(localStorage.getItem("expenseTrackerUser") || "null");
   });
 
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   const initialTransactions = [
     {
       id: 1,
@@ -81,11 +83,17 @@ function App() {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
 
   const [transaction, setTransaction] = useState(() => {
-    const savedTransactions = localStorage.getItem("transactions");
+    const user = JSON.parse(
+      localStorage.getItem("expenseTrackerUser") || "null",
+    );
 
-    return savedTransactions
-      ? JSON.parse(savedTransactions)
-      : initialTransactions;
+    if (!user) return [];
+
+    const storageKey = `transactions_${user.email.toLowerCase()}`;
+
+    const savedTransactions = localStorage.getItem(storageKey);
+
+    return savedTransactions ? JSON.parse(savedTransactions) : [];
   });
 
   const [editTransaction, setEditTransaction] = useState(null);
@@ -93,12 +101,20 @@ function App() {
 
   const handleAuthSuccess = (user) => {
     localStorage.setItem("expenseTrackerUser", JSON.stringify(user));
+
+    const storageKey = `transactions_${user.email.toLowerCase()}`;
+
+    const savedTransactions = localStorage.getItem(storageKey);
+
+    setTransaction(savedTransactions ? JSON.parse(savedTransactions) : []);
+
     setCurrentUser(user);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("expenseTrackerUser");
     setCurrentUser(null);
+    setTransaction([]);
   };
 
   // Add transaction
@@ -116,8 +132,12 @@ function App() {
 
   // Save transactions to localStorage
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transaction));
-  }, [transaction]);
+    if (!currentUser?.email) return;
+
+    const storageKey = `transactions_${currentUser.email.toLowerCase()}`;
+
+    localStorage.setItem(storageKey, JSON.stringify(transaction));
+  }, [transaction, currentUser]);
 
   // Delete transaction
   const handleDelete = useCallback((id) => {
@@ -155,14 +175,23 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen w-full flex gap-6 bg-[#0f1020] p-6">
+    <div className="min-h-screen w-full flex gap-6 bg-[#0f1020] pb-3 pr-3">
       {/* Sidebar */}
-      <aside className="w-60 shrink-0 sticky top-6 h-[calc(100vh-3rem)]">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <aside
+        className={`shrink-0 sticky top-0 h-[calc(100vh-2rem)] transition-all duration-200 ${
+          isSidebarCollapsed ? "w-20" : "w-64"
+        }`}
+      >
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
+        />
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col gap-6">
+      <main className="flex-1 min-w-0 flex flex-col transition-all duration-300 gap-6 pt-6">
         {/* <Header /> */}
 
         {/* ================= OVERVIEW TAB ================= */}

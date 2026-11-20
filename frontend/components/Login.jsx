@@ -20,31 +20,38 @@ export default function Login({ onAuthSuccess }) {
     });
   };
 
+  const validateForm = () => {
+    const { name, email, password } = formData;
+    if (!email.trim() || !password.trim()) {
+      setError("Please fill in all required fields.");
+      return false;
+    }
+
+    if (!isLogin && !name.trim()) {
+      setError("Please enter your name.");
+      return false;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
 
     const { name, email, password } = formData;
 
-    if (!email.trim() || !password.trim()) {
-      setError("Please fill in all required fields.");
-      return;
-    }
-
-    if (!isLogin && !name.trim()) {
-      setError("Please enter your name.");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
+    if (!validateForm()) return;
 
     const users = JSON.parse(localStorage.getItem("expenseUsers") || "[]");
 
